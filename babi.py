@@ -1,4 +1,4 @@
-# SINGLE OUTPUT with embedding
+# MODIFYING THE BABI ON KERAS SOLUTION TO ADD LEARNED SCALED TFIDF 
 # MERGE seq2idf input with word level sequence  
 story_maxlen = 40 
 vocab_size = 3499
