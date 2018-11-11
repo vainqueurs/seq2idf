@@ -1,0 +1,42 @@
+# babi model arond 46 % 
+# this is encoding the tfidf as casted to integers, categorical values (cf tf api)
+story_maxlen = 40 
+query_maxlen = 40
+vocab_size = num_words
+dsize =300 
+import tensorflow as tf
+#tf.enable_eager_execution()
+from keras.layers import merge
+
+
+
+EMBED_HIDDEN_SIZE = 300
+embedding_layer = Embedding(num_words,
+                            embed_dim,
+                            weights=[embedding_matrix],
+                            input_length=X_train.shape[1],
+                            trainable=False)
+
+
+sentence = layers.Input(shape=(story_maxlen,), dtype='int32')
+encoded_sentence = embedding_layer(sentence)# Embedding(vocab_size, 300,trainable=False)(sentence)
+encoded_sentence = Dropout(0.3)(encoded_sentence)
+# OTPT : 40 * 300 embedding encoding the sentence 
+    
+    
+question = layers.Input(shape=(query_maxlen,), dtype='int32')
+encoded_question = embedding_layer(question) #Embedding(vocab_size, 300,trainable=False)(question)
+encoded_question = Dropout(0.3)(encoded_question)
+encoded_question = GRU(EMBED_HIDDEN_SIZE)(encoded_question)
+# otpt : hidden representation 1*300, so we need to align the dimensions to merge it with sentence
+encoded_question = RepeatVector(story_maxlen)(encoded_question)
+# repeat hidden representation 300 times 
+
+
+merged = layers.concatenate([encoded_sentence, encoded_question])
+merged = GRU(256)(merged)
+merged = layers.Dropout(0.3)(merged)
+preds = layers.Dense(vocab_size, activation='softmax')(merged)
+
+model = Model([sentence, question], preds)
+model.summary()
